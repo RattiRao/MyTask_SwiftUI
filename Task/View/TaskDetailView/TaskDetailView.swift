@@ -12,6 +12,7 @@ struct TaskDetailView: View {
     @Binding var taskModel: TaskModel
     @Binding var isPresented: Bool
     @Binding var refreshTaskList: Bool
+    @State private var isDeleteAlert: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -34,18 +35,31 @@ struct TaskDetailView: View {
                 }//: Section
                 
                 Section {
-                    Button {
-                        if viewModel.deleteTask(task: taskModel) {
-                            refreshTaskList.toggle()
-                            isPresented = false
-                        }
+                    Button(role: .destructive) {
+                        isDeleteAlert.toggle()
                     } label: {
                         Text("Delete")
-                            .foregroundColor(.red)
-                            .fontWeight(.bold)
                             .frame(maxWidth: .infinity, alignment: .center)
                     }//: Delete Button
-                    
+                    .alert("Delete Task", isPresented: $isDeleteAlert) {
+                        Button {
+                            if viewModel.deleteTask(task: taskModel) {
+                                refreshTaskList.toggle()
+                                isPresented = false
+                            }
+                        } label: {
+                            Text("Yes")
+                        }//: Yes Button
+                        
+                        Button {
+                            //Do nothing
+                        } label: {
+                            Text("No")
+                        }//: No Button
+
+                    } message: {
+                        Text("Do you want to delete task?")
+                    }//: Alert
                 }
             }//: List
             .toolbar {
@@ -68,6 +82,7 @@ struct TaskDetailView: View {
                         Text("Update")
                             .foregroundColor(.accentColor)
                     }
+                    .disabled(taskModel.title.isEmpty)
                 }
             }
         }//: Navigation Stack

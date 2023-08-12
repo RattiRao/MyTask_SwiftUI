@@ -27,6 +27,7 @@ struct HomeView: View {
                 viewModel.getTasks(isCompleted: newValue == "Completed")
             })
             .pickerStyle(.segmented)
+            
             List(viewModel.tasks, id: \.id) { task in
                 VStack(alignment: .leading) {
                     Text(task.title)
